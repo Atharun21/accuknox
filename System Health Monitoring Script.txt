@@ -1,0 +1,55 @@
+System Health Monitoring Script
+This script monitors CPU usage, memory usage, disk space, and running processes, sending alerts if any metrics exceed predefined thresholds.
+
+
+
+import psutil
+import logging
+
+# Set thresholds
+CPU_THRESHOLD = 80  # in percentage
+MEMORY_THRESHOLD = 80  # in percentage
+DISK_THRESHOLD = 80  # in percentage
+LOG_FILE = 'system_health.log'
+
+# Configure logging
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s %(message)s')
+
+def check_cpu_usage():
+    cpu_usage = psutil.cpu_percent(interval=1)
+    if cpu_usage > CPU_THRESHOLD:
+        logging.warning(f'High CPU usage detected: {cpu_usage}%')
+    return cpu_usage
+
+def check_memory_usage():
+    memory = psutil.virtual_memory()
+    memory_usage = memory.percent
+    if memory_usage > MEMORY_THRESHOLD:
+        logging.warning(f'High Memory usage detected: {memory_usage}%')
+    return memory_usage
+
+def check_disk_usage():
+    disk = psutil.disk_usage('/')
+    disk_usage = disk.percent
+    if disk_usage > DISK_THRESHOLD:
+        logging.warning(f'High Disk usage detected: {disk_usage}%')
+    return disk_usage
+
+def check_running_processes():
+    process_count = len(psutil.pids())
+    logging.info(f'Number of running processes: {process_count}')
+    return process_count
+
+def monitor_system_health():
+    cpu_usage = check_cpu_usage()
+    memory_usage = check_memory_usage()
+    disk_usage = check_disk_usage()
+    process_count = check_running_processes()
+
+    print(f'CPU Usage: {cpu_usage}%')
+    print(f'Memory Usage: {memory_usage}%')
+    print(f'Disk Usage: {disk_usage}%')
+    print(f'Running Processes: {process_count}')
+
+if __name__ == '__main__':
+    monitor_system_health()
