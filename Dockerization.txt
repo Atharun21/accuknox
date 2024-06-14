@@ -1,0 +1,25 @@
+ Dockerization
+
+# Use a base image that fits the application needs
+FROM node:14-alpine
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the application port (replace 3000 with the actual application port if different)
+EXPOSE 3000
+
+# Command to run the application
+CMD ["npm", "start"]
+
+
+

@@ -1,0 +1,44 @@
+TLS Implementation
+To secure communication with TLS, use cert-manager and Let's Encrypt for automated certificate management.
+
+Install cert-manager
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+
+
+
+Create ClusterIssuer (cluster-issuer.yaml):
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: <your-email>
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+
+Apply the ClusterIssuer:
+
+kubectl apply -f cluster-issuer.yaml
+
+
+
+Summary
+Ensure the following files are in the GitHub repository:
+
+Dockerfile
+Kubernetes manifests: deployment.yaml, service.yaml, ingress.yaml
+GitHub Actions workflow: .github/workflows/ci-cd.yml
+cert-manager configuration: cluster-issuer.yaml
+
+
+
+
+

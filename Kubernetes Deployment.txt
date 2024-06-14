@@ -1,0 +1,76 @@
+Kubernetes Deployment
+
+Create Kubernetes manifest files to deploy the Wisecow application. You'll need a Deployment, a Service, and an Ingress (for TLS).
+
+Deployment (deployment.yaml):
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wisecow-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wisecow
+  template:
+    metadata:
+      labels:
+        app: wisecow
+    spec:
+      containers:
+      - name: wisecow
+        image: <your-docker-registry>/wisecow:latest
+        ports:
+        - containerPort: 3000
+
+
+
+Service (service.yaml):
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: wisecow-service
+spec:
+  type: ClusterIP
+  selector:
+    app: wisecow
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+
+
+
+Ingress (ingress.yaml):
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wisecow-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: <your-domain>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wisecow-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - <your-domain>
+    secretName: wisecow-tls
+
+
+
+
+
+
